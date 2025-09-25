@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RentCar-OliverCuello</title>
+  <style>
+    :root{
+      --accent:#1f6f8b;
+      --accent-2:#08a6c3;
+      --bg:#f5f7f9;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --shadow: 0 8px 28px rgba(2,6,23,0.08);
+      --maxw:1200px;
+      --radius:12px;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #eef6fb 100%); color:#0b1220}
+    a{color:inherit; text-decoration:none}
+    .container{max-width:var(--maxw); margin:0 auto; padding:16px}
+
+    /* Header */
+    header{background:var(--card); box-shadow:var(--shadow); position:sticky; top:0; z-index:60}
+    .site-head{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{width:48px; height:48px; border-radius:10px; object-fit:cover}
+
+   
+    .filters{display:flex; gap:12px; margin-top:12px; flex-wrap:wrap}
+    .select, .search {background:var(--card); padding:10px 12px; border-radius:10px; box-shadow:var(--shadow); border:1px solid rgba(11,18,32,0.04)}
+    .select select{border:none; background:transparent; outline:none; font-weight:600}
+    .search input{border:none; outline:none; width:220px}
+
+  
+    main{padding:18px 0}
+    .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+    @media (max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){.grid{grid-template-columns:1fr}}
+
+ 
+    .car-card{background:var(--card); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column}
+    .car-media{position:relative; height:180px; background:#e9f7fb; display:flex; align-items:center; justify-content:center}
+    .car-media img{width:100%; height:100%; object-fit:cover}
+    .car-body{padding:12px 14px; display:flex; flex-direction:column; gap:8px}
+    .car-title{font-weight:800}
+    .car-meta{font-size:13px; color:var(--muted)}
+    .car-actions{display:flex; gap:8px; margin-top:8px}
+    .btn{padding:8px 10px; border-radius:8px; font-weight:700; cursor:pointer}
+    .btn-primary{background:var(--accent); color:white}
+    .btn-ghost{background:transparent; border:1px solid rgba(11,18,32,0.06)}
+
+    .badge{position:absolute; left:12px; top:12px; background:rgba(0,0,0,0.6); color:white; padding:6px 8px; border-radius:8px; font-weight:700}
+
+   
+    .modal-backdrop{position:fixed; inset:0; background:rgba(2,6,23,0.6); display:none; align-items:center; justify-content:center; z-index:120}
+    .modal{background:var(--card); width:min(920px,95%); border-radius:14px; max-height:90vh; overflow:auto; box-shadow:0 18px 40px rgba(2,6,23,0.6)}
+    .modal-grid{display:grid; grid-template-columns:1fr 360px; gap:12px}
+    @media (max-width:920px){.modal-grid{grid-template-columns:1fr}}
+    .gallery{display:flex; gap:8px; flex-direction:column}
+    .main-photo{height:420px; background:#111}
+    .thumbs{display:flex; gap:8px; margin-top:8px}
+    .thumbs img{width:72px; height:54px; object-fit:cover; border-radius:8px; cursor:pointer}
+    .specs{padding:18px}
+    .specs h3{margin-top:0}
+    .spec-list{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+    .close-x{position:absolute; right:12px; top:12px; background:#fff0; border:none; font-weight:800; font-size:18px; cursor:pointer}
+
+    footer{padding:20px; text-align:center; color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="site-head">
+        <div class="brand">
+
+          
+          <img src="Logo.jpg" alt="Logo" class="logo">
+          <div>
+            <div style="font-weight:800">RentCar-OliverCuello</div>
+            <div style="font-size:12px; color:var(--muted)">Explora vehículos · Fotos · Especificaciones</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:20px; align-items:center">
+          <a class="btn btn-ghost" href="#">Login</a>
+          <a class="btn btn-primary" href="#">Contactar</a>
+        </div>
+      </div>
+
+      
+      <div class="filters">
+        <div class="search select">
+          <label class="muted" style="font-size:12px">Buscar</label>
+          <div style="display:flex; gap:8px; align-items:center">
+            <input id="q" placeholder="Ej: Toyota Corolla" />
+            <button class="btn btn-primary" id="searchBtn">Buscar</button>
+          </div>
+        </div>
+
+        <div class="select">
+          <label class="muted" style="font-size:12px">Marca</label>
+          <select id="filterMake">
+            <option value="">Todas</option>
+            <option>Toyota</option>
+            <option>Honda</option>
+            <option>Ford</option>
+            <option>BMW</option>
+          </select>
+        </div>
+
+        <div class="select">
+          <label class="muted" style="font-size:12px">Año</label>
+          <select id="filterYear">
+            <option value="">Cualquiera</option>
+            <option>2025</option>
+            <option>2024</option>
+            <option>2023</option>
+            <option>2020</option>
+          </select>
+        </div>
+
+        <div class="select">
+          <label class="muted" style="font-size:12px">Tipo</label>
+          <select id="filterType">
+            <option value="">Todos</option>
+            <option>Sedan</option>
+            <option>SUV</option>
+            <option>Pickup</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <section>
+        <h2 style="margin:12px 0">Listado de vehículos</h2>
+        <div class="grid" id="vehicleGrid"></div>
+      </section>
+    </div>
+  </main>
+
+
+  <div id="modal" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document">
+      <button class="close-x" id="closeModal">✕</button>
+      <div class="modal-grid">
+        <div style="padding:12px">
+          <div class="gallery">
+            <div class="main-photo" id="mainPhoto" style="background-size:cover; background-position:center"></div>
+            <div class="thumbs" id="thumbs"></div>
+          </div>
+        </div>
+        <aside class="specs" id="specs">
+          <h3 id="modalTitle"></h3>
+          <p class="muted" id="modalSubtitle"></p>
+          <div style="margin-top:12px">
+            <strong>Precio:</strong> <span id="modalPrice"></span>
+          </div>
+          <hr style="margin:12px 0"/>
+          <div class="spec-list" id="modalSpecs"></div>
+          <div style="margin-top:16px">
+            <button class="btn btn-primary">Solicitar más info</button>
+            <button class="btn btn-ghost" style="margin-left:8px" id="reserveBtn">Reservar</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script>
+    const vehicles = [
+      {
+        id: 1, make: 'BMW', model: 'X3', year: 2024, type: 'SUV',
+        price: 3200000, km: 5000, color: 'Negro', fuel: 'Híbrido',
+        img: ['BMWX32024.jpg','BMWX32024_2.jpeg']
+      },
+      {
+        id: 2, make: 'Ford', model: 'Ranger', year: 2024, type: 'Pickup',
+        price: 1850000, km: 40000, color: 'Rojo', fuel: 'Diesel',
+        img: ['FordRanger24.jpg','FordRanger24_2.jpg']
+      },
+      {
+        id: 3, make: 'Toyota', model: 'Corolla', year: 2024, type: 'Sedan',
+        price: 1250000, km: 12000, color: 'Blanco', fuel: 'Gasolina',
+        img: ['ToyotaCorolla24.jpg','ToyotaCorolla24_2.jpg']
+      },
+      {
+        id: 4, make: 'Honda', model: 'Civic', year: 2024, type: 'Sedan',
+        price: 1125000, km: 22000, color: 'Gris', fuel: 'Gasolina',
+        img: ['HondaCivic24.png','HondaCivic24_2.png']
+      }
+    ];
+
+    const grid = document.getElementById('vehicleGrid');
+    function formatMoney(n){ return new Intl.NumberFormat('es-DO',{ style:'currency', currency:'DOP', maximumFractionDigits:0 }).format(n) }
+
+    function renderGrid(list){
+      grid.innerHTML = '';
+      list.forEach(v =>{
+        const el = document.createElement('article');
+        el.className = 'car-card';
+        el.innerHTML = `
+          <div class="car-media">
+            <span class="badge">${v.year}</span>
+            <img src="${v.img[0]}" alt="${v.make} ${v.model}" loading="lazy">
+          </div>
+          <div class="car-body">
+            <div>
+              <div class="car-title">${v.make} ${v.model}</div>
+              <div class="car-meta">${v.type} · ${v.km.toLocaleString()} km · ${v.color}</div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <div style="font-weight:800">${formatMoney(v.price)}</div>
+              <div class="car-actions">
+                <button class="btn btn-primary" data-id="${v.id}">Ver detalles</button>
+              </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(el);
+      });
+
+      document.querySelectorAll('.btn-primary[data-id]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const id = Number(btn.getAttribute('data-id'));
+          openModal(id);
+        });
+      });
+    }
+
+    renderGrid(vehicles);
+
+    
+    document.getElementById('filterMake').addEventListener('change', applyFilters);
+    document.getElementById('filterYear').addEventListener('change', applyFilters);
+    document.getElementById('filterType').addEventListener('change', applyFilters);
+    document.getElementById('searchBtn').addEventListener('click', applyFilters);
+
+    function applyFilters(){
+      const make = document.getElementById('filterMake').value;
+      const year = document.getElementById('filterYear').value;
+      const type = document.getElementById('filterType').value;
+      const q = document.getElementById('q').value.trim().toLowerCase();
+      let res = vehicles.filter(v=>{
+        if(make && v.make !== make) return false;
+        if(year && v.year.toString() !== year) return false;
+        if(type && v.type !== type) return false;
+        if(q && !(v.make.toLowerCase().includes(q) || v.model.toLowerCase().includes(q))) return false;
+        return true;
+      });
+      renderGrid(res);
+    }
+
+   
+    const modal = document.getElementById('modal');
+    const closeModalBtn = document.getElementById('closeModal');
+    closeModalBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal() });
+
+    function openModal(id){
+      const v = vehicles.find(x=>x.id===id);
+      if(!v) return;
+      document.getElementById('modalTitle').textContent = `${v.make} ${v.model} ${v.year}`;
+      document.getElementById('modalSubtitle').textContent = `${v.type} · ${v.fuel}`;
+      document.getElementById('modalPrice').textContent = formatMoney(v.price);
+
+      const specs = document.getElementById('modalSpecs');
+      specs.innerHTML = '';
+      const specList = { 'Kilometraje': v.km + ' km', 'Color': v.color, 'Combustible': v.fuel, 'Año': v.year, 'Transmisión': 'Automática' };
+      for(const k in specList){
+        const d = document.createElement('div');
+        d.innerHTML = `<strong>${k}</strong><div class="muted">${specList[k]}</div>`;
+        specs.appendChild(d);
+      }
+
+      const main = document.getElementById('mainPhoto');
+      main.style.backgroundImage = `url('${v.img[0]}')`;
+      const thumbs = document.getElementById('thumbs');
+      thumbs.innerHTML = '';
+      v.img.forEach((src, idx)=>{
+        const t = document.createElement('img');
+        t.src = src;
+        t.alt = `${v.make} ${v.model} ${idx+1}`;
+        t.addEventListener('click', ()=>{ main.style.backgroundImage = `url('${src}')` });
+        thumbs.appendChild(t);
+      });
+
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(){
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+    }
+
+    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal() });
+  </script>
+  <footer>
+  <div class="container" style="display:flex; flex-direction:column; align-items:center; gap:8px">
+    <img src="Logo.jpg" alt="Logo ReservaVehicles" style="width:80px; border-radius:10px">
+    <div>RentCar - OliverCuello· fotografías y especificaciones de ejemplo</div>
+    <small style="color:var(--muted)">© 2025 RentCar-OliverCuello</small>
+  </div>
+</footer>
+
+</body>
+</html>
